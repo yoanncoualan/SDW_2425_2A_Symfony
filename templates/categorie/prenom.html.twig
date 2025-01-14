@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+	<h1>Hello
+		{{ prenom }}
+		!</h1>
+
+	<p>
+		<a href="{{ path('app_categorie') }}" title="Accéder à la page statique">Accéder à la page statique</a>
+	</p>
+{% endblock %}

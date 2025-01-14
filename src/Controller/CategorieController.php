@@ -35,14 +35,25 @@ final class CategorieController extends AbstractController{
     }
 
     #[Route('/category/show/{id}', name: 'app_category_show')]
-    public function show(Category $category = null): Response
+    public function show(Category $category = null, Request $request, EntityManagerInterface $em): Response
     {
         if($category === null){
             return $this->redirectToRoute('app_categorie');
         }
 
-        return $this->render('category/show.html.twig', [
+        $form = $this->createForm(CategoryType::class, $category);
+
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()){
+            $em->persist($category);
+            $em->flush();
+
+            return $this->redirectToRoute('app_categorie');
+        }
+
+        return $this->render('categorie/show.html.twig', [
             'category' => $category,
+            'editCategory' => $form
         ]);
     }
 
@@ -72,6 +83,16 @@ final class CategorieController extends AbstractController{
         $em->persist($category);
         $em->flush();
 
+        return $this->redirectToRoute('app_categorie');
+    }
+
+    #[Route('/category/delete/{id}', name: 'app_category_delete')]
+    public function delete(Request $request, EntityManagerInterface $em, Category $category)
+    {
+        if ($this->isCsrfTokenValid('delete' . $category->getId(), $request->request->get('csrf'))) {
+            $em->remove($category);
+            $em->flush();
+        }
         return $this->redirectToRoute('app_categorie');
     }
 }

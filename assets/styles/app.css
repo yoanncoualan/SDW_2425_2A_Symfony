@@ -1,3 +1,11 @@
-body {
-    background-color: skyblue;
+.alert{
+    color: white;
+    padding: 10px 20px;
+}
+
+.alert-warning{
+    background-color: #f0ad4e;
+}
+.alert-success{
+    background-color: #5cb85c;
 }

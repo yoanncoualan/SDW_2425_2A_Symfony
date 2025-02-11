@@ -23,6 +23,8 @@ final class CategorieController extends AbstractController{
             $em->persist($category);
             $em->flush();
 
+            $this->addFlash('success', 'Catégorie ajoutée avec succès');
+
             return $this->redirectToRoute('app_categorie');
         }
         
@@ -38,6 +40,7 @@ final class CategorieController extends AbstractController{
     public function show(Category $category = null, Request $request, EntityManagerInterface $em): Response
     {
         if($category === null){
+            $this->addFlash('warning', 'Catégorie introuvable');
             return $this->redirectToRoute('app_categorie');
         }
 
@@ -47,6 +50,8 @@ final class CategorieController extends AbstractController{
         if($form->isSubmitted() && $form->isValid()){
             $em->persist($category);
             $em->flush();
+
+            $this->addFlash('success', 'Catégorie modifiée avec succès');
 
             return $this->redirectToRoute('app_categorie');
         }
@@ -68,6 +73,8 @@ final class CategorieController extends AbstractController{
         // Exécute la requête SQL
         $em->flush();
 
+        $this->addFlash('success', 'Catégorie ajoutée avec succès');
+
         return $this->redirectToRoute('app_categorie');
     }
 
@@ -75,6 +82,7 @@ final class CategorieController extends AbstractController{
     public function edit(Category $category = null, EntityManagerInterface $em): Response
     {
         if($category === null){
+            $this->addFlash('warning', 'Catégorie introuvable');
             return $this->redirectToRoute('app_categorie');
         }
 
@@ -82,6 +90,8 @@ final class CategorieController extends AbstractController{
 
         $em->persist($category);
         $em->flush();
+
+        $this->addFlash('success', 'Catégorie modifiée avec succès');
 
         return $this->redirectToRoute('app_categorie');
     }
@@ -92,6 +102,8 @@ final class CategorieController extends AbstractController{
         if ($this->isCsrfTokenValid('delete' . $category->getId(), $request->request->get('csrf'))) {
             $em->remove($category);
             $em->flush();
+            
+            $this->addFlash('success', 'Catégorie supprimée avec succès');
         }
         return $this->redirectToRoute('app_categorie');
     }

@@ -10,6 +10,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+
+#[Route('{_locale}')]
 final class CategorieController extends AbstractController{
 
     #[Route('/', name: 'app_categorie')]
@@ -102,7 +104,7 @@ final class CategorieController extends AbstractController{
         if ($this->isCsrfTokenValid('delete' . $category->getId(), $request->request->get('csrf'))) {
             $em->remove($category);
             $em->flush();
-            
+
             $this->addFlash('success', 'Catégorie supprimée avec succès');
         }
         return $this->redirectToRoute('app_categorie');

@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+	<h1>{{ product.title }}</h1>
+	<p>{{ product.content }}</p>
+	<p>{{ product.category.title }}</p>
+	{% if product.image %}
+		<img src="{{ asset('uploads/' ~ product.image) }}" alt="{{ product.title }}">
+	{% endif %}
+
+	<h2>Modifier le produit</h2>
+	{{ form(edit_product) }}
+
+		<p>
+			<a href="{{path('app_product_delete_image', {id: product.id})}}">Supprimer l'image</a>
+		</p>
+	{% endblock %}

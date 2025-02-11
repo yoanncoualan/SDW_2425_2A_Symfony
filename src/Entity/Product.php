@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
  
 #[HasLifecycleCallbacks]
-#[UniqueEntity('title')]
+#[UniqueEntity('title', message: 'product.title_used')]
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product
 {

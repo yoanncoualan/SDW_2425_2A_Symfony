@@ -12,10 +12,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
+#[Route('{_locale}')]
 final class ProductController extends AbstractController{
     #[Route('/product', name: 'app_product')]
-    public function index(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
+    public function index(Request $request, EntityManagerInterface $em, SluggerInterface $slugger, TranslatorInterface $t): Response
     {
         $product = new Product();
         $form = $this->createForm(ProductType::class, $product);
@@ -43,7 +45,7 @@ final class ProductController extends AbstractController{
             $em->persist($product);
             $em->flush();
 
-            $this->addFlash('success', 'Produit ajouté avec succès');
+            $this->addFlash('success', $t->trans('Product.added'));
             return $this->redirectToRoute('app_product');
         }
 
@@ -64,6 +66,69 @@ final class ProductController extends AbstractController{
             
             $this->addFlash('success', 'Produit supprimée avec succès');
         }
+        return $this->redirectToRoute('app_product');
+    }
+
+    #[Route('/product/show/{id}', name: 'app_product_show')]
+    public function show(Product $product = null, Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
+    {
+        if($product === null){
+            $this->addFlash('warning', 'Produit introuvable');
+            return $this->redirectToRoute('app_product');
+        }
+
+        $form = $this->createForm(ProductType::class, $product);
+
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()){
+            /** @var UploadedFile $imageFile */
+            $imageFile = $form->get('image')->getData();
+ 
+            if ($imageFile) {
+                // Suppression de l'ancienne image :
+                unlink($this->getParameter('upload_directory').'/'.$product->getImage());
+                
+                $newFilename = $slugger->slug($product->getTitle()).'.'.$imageFile->guessExtension();
+ 
+                try {
+                    $imageFile->move(
+                        $this->getParameter('upload_directory'),
+                        $newFilename
+                    );
+                    $product->setImage($newFilename);
+                } catch (FileException $e) {
+                    $this->addFlash('warning', 'Impossible d\'ajouter l\'image');
+                }
+            }
+
+            $em->persist($product);
+            $em->flush();
+
+            $this->addFlash('success', 'Produit modifié avec succès');
+
+            return $this->redirectToRoute('app_product');
+        }
+
+        return $this->render('product/show.html.twig', [
+            'product' => $product,
+            'edit_product' => $form
+        ]);
+    }
+
+    #[Route("/product/delete-image/{id}", name: "app_product_delete_image")]
+    public function deleteImage(Product $product = null, EntityManagerInterface $em){
+        if($product === null){
+            $this->addFlash('warning', 'Produit introuvable');
+            return $this->redirectToRoute('app_product');
+        }
+
+        unlink($this->getParameter('upload_directory').'/'.$product->getImage());
+
+        $product->setImage(null);
+        $em->persist($product);
+        $em->flush();
+        
+        $this->addFlash('success', 'Image supprimée avec succès');
         return $this->redirectToRoute('app_product');
     }
 }

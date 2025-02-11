@@ -1,0 +1,6 @@
+Product:
+  title: Products
+  added: Product successfully added
+  nb: There is %{count} products
+
+Title: Title

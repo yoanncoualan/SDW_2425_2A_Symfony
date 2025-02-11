@@ -14,12 +14,14 @@
 			<img src="{{ asset('uploads/' ~ p.image) }}" alt="{{ p.title }}">
 		{% endif %}
 
-		<a href="{{ path('app_product_show', {id: p.id}) }}">Voir</a>
+		{% if is_granted('ROLE_ADMIN') %}
+			<a href="{{ path('app_product_show', {id: p.id}) }}">Voir</a>
 
-		<form action="{{path('app_product_delete', {id: p.id})}}" method="POST">
-			<input type="hidden" name="csrf" value="{{ csrf_token('delete' ~ p.id) }}">
-			<input type="submit" value="Delete">
-		</form>
+			<form action="{{path('app_product_delete', {id: p.id})}}" method="POST">
+				<input type="hidden" name="csrf" value="{{ csrf_token('delete' ~ p.id) }}">
+				<input type="submit" value="Delete">
+			</form>
+		{% endif %}
 	{% else %}
 		<p>Aucun produit trouvé.</p>
 	{% endfor %}

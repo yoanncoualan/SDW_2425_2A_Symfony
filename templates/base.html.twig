@@ -21,6 +21,31 @@
 			{% endfor %}
 		{% endfor %}
 
+		<nav>
+			<ul>
+				<li>
+					<a href="{{path('app_categorie')}}">Catégories</a>
+				</li>
+				<li>
+					<a href="{{path('app_product')}}">Produits</a>
+				</li>
+				{% if app.user %}
+					<li>
+						Bienvenu
+						{{ app.user.email }}
+						<a href="{{path('app_logout')}}">Déconnexion</a>
+					</li>
+				{% else %}
+					<li>
+						<a href="{{path('app_login')}}">Connexion</a>
+					</li>
+					<li>
+						<a href="{{path('app_register')}}">Inscription</a>
+					</li>
+				{% endif %}
+			</ul>
+		</nav>
+
 		{% block body %}{% endblock %}
 	</body>
 </html>
